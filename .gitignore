@@ -1,0 +1,76 @@
+# =============================================================
+#  Unity generated / cache folders (재생성됨 — 커밋 불필요)
+# =============================================================
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Asset meta data — 폴더를 ignore하면 그 안의 .meta도 함께 무시
+!/[Aa]ssets/**/*.meta
+
+# Unity3D 생성 메타/캐시 파일
+/[Aa]ssets/[Aa]ssetStoreTools*
+/[Aa]ssets/[Pp]lugins/[Ee]ditor/JetBrains*
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity3D 빌드 산출물
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Crashlytics generated file and folder
+crashlytics-build.properties
+/[Aa]ssets/[Ss]treamingAssets/aas.meta
+/[Aa]ssets/[Ss]treamingAssets/HoloLens/
+
+# =============================================================
+#  민감 정보 (API 키 — 절대 커밋 금지)
+# =============================================================
+/[Aa]ssets/[Ss]treamingAssets/anthropic_api_key.txt
+/[Aa]ssets/[Ss]treamingAssets/tts_api_key.txt
+/[Aa]ssets/[Ss]treamingAssets/*api_key*.txt
+/[Aa]ssets/[Ss]treamingAssets/*secret*
+*.key
+.env
+.env.*
+secrets.json
+
+# =============================================================
+#  IDE / OS
+# =============================================================
+.vs/
+.vscode/
+.idea/
+.gradle/
+ExportedObj/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =============================================================
+#  프로젝트 임시/복구 폴더
+# =============================================================
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta

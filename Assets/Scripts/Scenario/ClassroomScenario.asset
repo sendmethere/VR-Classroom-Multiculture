@@ -1,0 +1,149 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: ClassroomScenario
+  m_EditorClassIdentifier: Assembly-CSharp:Classroom.Scenario:ScenarioScript
+  title: "\uB2E4\uBB38\uD654 \uCC28\uBCC4 \uC0C1\uD669 \u2014 \uC5ED\uD560 \uC815\uD558\uAE30
+    (\uAD00\uCC30 \uC138\uC158)"
+  cast:
+  - id: "\uD0DC\uC0C1"
+    displayName: "\uD0DC\uC0C1"
+    color: {r: 0.2, g: 0.45, b: 0.85, a: 1}
+  - id: "\uC120\uC601"
+    displayName: "\uC120\uC601"
+    color: {r: 0.85, g: 0.3, b: 0.3, a: 1}
+  - id: "\uBBFC\uC601"
+    displayName: "\uBBFC\uC601"
+    color: {r: 0.8, g: 0.45, b: 0.15, a: 1}
+  - id: "\uB9C8\uC57C"
+    displayName: "\uB9C8\uC57C"
+    color: {r: 0.25, g: 0.65, b: 0.5, a: 1}
+  lines:
+  - speakerId: "\uC120\uC601"
+    text: "\uC544.. \uB098 \uB9C8\uC57C\uB791 \uD558\uAE30 \uC2EB\uC5C8\uB294\uB370
+      \u3160\u3160"
+    lookAtId: "\uBBFC\uC601"
+    gesture: 2
+    emotion: sad
+    extraHold: 0
+  - speakerId: "\uBBFC\uC601"
+    text: "\uB098\uB3C4\u2026 \uB9C8\uC57C\uB294 \uC660\uC9C0 \uC798 \uBABB\uD560
+      \uAC83 \uAC19\uC544"
+    lookAtId: "\uB9C8\uC57C"
+    gesture: 2
+    emotion: neutral
+    extraHold: 0
+  - speakerId: "\uD0DC\uC0C1"
+    text: "\uC624\uB298 \uC6B0\uB9AC\uB294 \uC6B0\uB9AC \uC9C0\uC5ED\uC758 \uBB38\uD654\uB97C
+      \uC54C\uB9AC\uB294 \uC2E0\uBB38\uC744 \uB9CC\uB4E4\uC5B4\uC57C \uD574! \uAC01\uC790
+      \uC5B4\uB5A4 \uC5ED\uD560\uC744 \uD558\uBA74 \uC88B\uACA0\uC5B4?"
+    lookAtId: 
+    gesture: 0
+    emotion: happy
+    extraHold: 0
+  - speakerId: "\uBBFC\uC601"
+    text: "\uBA3C\uC800 \uC11C\uB85C \uC798\uD558\uB294 \uAC83\uC5D0 \uB300\uD574
+      \uB9D0\uD574\uBCFC\uAE4C?"
+    lookAtId: 
+    gesture: 0
+    emotion: neutral
+    extraHold: 0
+  - speakerId: "\uC120\uC601"
+    text: "\uC88B\uC544, \uB098\uB294 \uC778\uD130\uB137 \uAC80\uC0C9\uC73C\uB85C
+      \uC790\uB8CC \uCC3E\uAE30\uB97C \uC798\uD574!"
+    lookAtId: 
+    gesture: 0
+    emotion: happy
+    extraHold: 0
+  - speakerId: "\uBBFC\uC601"
+    text: "\uB098\uB294 \uB0B4\uC6A9\uC744 \uC815\uB9AC\uD558\uACE0 \uD45C \uB9CC\uB4DC\uB294
+      \uAC78 \uC798\uD574"
+    lookAtId: 
+    gesture: 0
+    emotion: neutral
+    extraHold: 0
+  - speakerId: "\uD0DC\uC0C1"
+    text: "\uC88B\uC544. \uADF8\uB7FC \uC120\uC601\uC774\uB294 \uC790\uB8CC \uAC80\uC0C9\uC744
+      \uB9E1\uACE0, \uBBFC\uC601\uC774\uB294 \uB0B4\uC6A9 \uC815\uB9AC\uD574\uC8FC\uB294
+      \uC5ED\uD560\uC744 \uB9E1\uC544\uC918. \uB098\uB294 \uB514\uC790\uC778\uC744
+      \uB9E1\uC744\uAC8C. \uB9C8\uC57C\uB294?"
+    lookAtId: "\uB9C8\uC57C"
+    gesture: 0
+    emotion: neutral
+    extraHold: 0
+  - speakerId: "\uB9C8\uC57C"
+    text: ..........
+    lookAtId: 
+    gesture: 5
+    emotion: sad
+    extraHold: 0.6
+  - speakerId: "\uD0DC\uC0C1"
+    text: "\uB9C8\uC57C?"
+    lookAtId: "\uB9C8\uC57C"
+    gesture: 0
+    emotion: neutral
+    extraHold: 0
+  - speakerId: "\uB9C8\uC57C"
+    text: "\uC120\uC601\uC774\uB791 \uBBFC\uC601\uC774\uAC00 \uB0A0 \uBC18\uAE30\uC9C0
+      \uC54A\uB294 \uAC83 \uAC19\uC544.. \uBB58 \uC798\uD574\uC57C \uD55C\uB2E4\uACE0
+      \uD560\uAE4C?"
+    lookAtId: 
+    gesture: 3
+    emotion: thinking
+    extraHold: 0
+  - speakerId: "\uC120\uC601"
+    text: "\uB9C8\uC57C. \uC6B0\uB9AC \uB9D0 \uC774\uD574\uD558\uB294 \uAC70\uC9C0?
+      \uB4E3\uACE0 \uC788\uC9C0?"
+    lookAtId: "\uB9C8\uC57C"
+    gesture: 1
+    emotion: neutral
+    extraHold: 0
+  - speakerId: "\uBBFC\uC601"
+    text: "\uB9C8\uC57C \uD55C\uAD6D\uB9D0 \uBABB\uD558\uB294 \uAC70 \uC544\uB2C8\uC57C?"
+    lookAtId: "\uB9C8\uC57C"
+    gesture: 1
+    emotion: neutral
+    extraHold: 0
+  - speakerId: "\uD0DC\uC0C1"
+    text: "\uADF8\uB7EC\uC9C0 \uB9C8. \uB9C8\uC57C\uB294 \uD55C\uAD6D\uB9D0 \uC798
+      \uD560 \uC218 \uC788\uC5B4. \uD639\uC2DC \uC774\uD574\uD558\uC9C0 \uBABB\uD558\uB294
+      \uBD80\uBD84\uC774 \uC788\uC73C\uBA74 \uC54C\uB824\uC918"
+    lookAtId: 
+    gesture: 0
+    emotion: neutral
+    extraHold: 0
+  - speakerId: "\uB9C8\uC57C"
+    text: "\uB098\u2026 \uB098.\uB294.. \uB098\uB294\u2026"
+    lookAtId: 
+    gesture: 7
+    emotion: sad
+    extraHold: 0
+  - speakerId: "\uC120\uC601"
+    text: "\uC81C\uB300\uB85C \uB9D0\uC744 \uD574! \uBB58 \uC798\uD55C\uB2E4\uB294
+      \uAC70\uC57C?"
+    lookAtId: "\uB9C8\uC57C"
+    gesture: 1
+    emotion: angry
+    extraHold: 0
+  - speakerId: "\uB9C8\uC57C"
+    text: "\u2026"
+    lookAtId: 
+    gesture: 4
+    emotion: sad
+    extraHold: 0.8
+  - speakerId: "\uD0DC\uC0C1"
+    text: "\uADF8\uB7FC \uB9C8\uC57C, \uB108\uB294 \uB098\uC640 \uAC19\uC774 \uC2E0\uBB38
+      \uB514\uC790\uC778 \uB9CC\uB4E4\uAE30\uB85C \uD558\uC790!"
+    lookAtId: "\uB9C8\uC57C"
+    gesture: 0
+    emotion: happy
+    extraHold: 0

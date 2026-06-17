@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e16107b9a73cb443a3ca5694ee43e71, type: 3}
+  m_Name: SampleDialogueTree
+  m_EditorClassIdentifier: Assembly-CSharp::AIAvatar.DialogueTree
+  rootNodeId: root
+  nodes:
+  - id: root
+    avatarLine: "\uC548\uB155\uD558\uC138\uC694! \uBB34\uC5C7\uC744 \uD558\uACE0
+      \uC2F6\uC73C\uC138\uC694?"
+    emotion: happy
+    action: 
+    choices:
+    - text: "\uC774 \uBC29\uC744 \uC18C\uAC1C\uD574\uC918"
+      nextNodeId: intro
+    - text: "\uC790\uC720\uB86D\uAC8C \uB300\uD654\uD558\uC790"
+      nextNodeId: ai
+    handoffToAI: 0
+    aiContextSeed: 
+  - id: intro
+    avatarLine: "\uC5EC\uAE34 VR \uAD50\uC2E4\uC774\uC5D0\uC694. \uB354 \uAD81\uAE08\uD55C
+      \uAC8C \uC788\uB098\uC694?"
+    emotion: neutral
+    action: 
+    choices:
+    - text: "\uC774\uC81C \uC790\uC720\uB86D\uAC8C \uC598\uAE30\uD558\uC790"
+      nextNodeId: ai
+    - text: "\uACE0\uB9C8\uC6CC, \uB05D\uB0BC\uAC8C"
+      nextNodeId: 
+    handoffToAI: 0
+    aiContextSeed: 
+  - id: ai
+    avatarLine: "\uC88B\uC544\uC694, \uD3B8\uD558\uAC8C \uB9D0 \uAC78\uC5B4\uC8FC\uC138\uC694."
+    emotion: thinking
+    action: 
+    choices: []
+    handoffToAI: 1
+    aiContextSeed: "\uD50C\uB808\uC774\uC5B4\uAC00 \uC790\uC720 \uB300\uD654\uB97C
+      \uC120\uD0DD\uD588\uC2B5\uB2C8\uB2E4."

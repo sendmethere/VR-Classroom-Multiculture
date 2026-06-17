@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: adfd8249f71992141a29e59f5566c303
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 359928
+  packageName: DeskChair_3Variants
+  packageVersion: 1.0
+  assetPath: Assets/DeskChair_3Variants/Materials/BuiltIn/Aged.mat
+  uploadId: 858022

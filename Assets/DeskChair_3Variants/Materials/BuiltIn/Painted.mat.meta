@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8fe5fd2035e5e024682df141870abc6b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 359928
+  packageName: DeskChair_3Variants
+  packageVersion: 1.0
+  assetPath: Assets/DeskChair_3Variants/Materials/BuiltIn/Painted.mat
+  uploadId: 858022
