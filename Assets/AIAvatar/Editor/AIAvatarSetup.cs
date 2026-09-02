@@ -22,7 +22,7 @@ namespace AIAvatar.EditorTools
         private const string PersonaPath = AssetRoot + "/Personas/SamplePersona.asset";
         private const string TreePath = AssetRoot + "/Personas/SampleDialogueTree.asset";
 
-        [MenuItem("Tools/AI Avatar/Create Conversational Avatar", false, 0)]
+        // [MenuItem("Tools/AI Avatar/Create Conversational Avatar", false, 0)]  // 숨김(샘플/데모)
         public static void CreateAvatar()
         {
             var font = AIAvatarFontUtil.GetOrCreateKoreanFont();
@@ -118,7 +118,7 @@ namespace AIAvatar.EditorTools
                 "• VR 레이 클릭: 'Tools ▸ AI Avatar ▸ Fix EventSystem for XR UI' 실행 + Ray Interactor의 UI Press Input 바인딩 확인.");
         }
 
-        [MenuItem("Tools/AI Avatar/Create Sample Persona Only", false, 20)]
+        // [MenuItem("Tools/AI Avatar/Create Sample Persona Only", false, 20)]  // 숨김(샘플/데모)
         public static void CreatePersonaOnly()
         {
             var p = CreateOrLoadPersona();
@@ -390,7 +390,7 @@ namespace AIAvatar.EditorTools
             es.AddComponent<XRUIInputModule>(); // XR-ready UI input
         }
 
-        [MenuItem("Tools/AI Avatar/Fix EventSystem for XR UI", false, 40)]
+        // [MenuItem("Tools/AI Avatar/Fix EventSystem for XR UI", false, 40)]  // 숨김(자동 실행 유틸)
         public static void FixEventSystemForXRUI()
         {
             var es = Object.FindFirstObjectByType<EventSystem>();

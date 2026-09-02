@@ -45,8 +45,13 @@ namespace AIAvatar
         [SerializeField] private int sampleRate = 16000;
         [Tooltip("한 번 녹음 최대 길이(초). 초과하면 잘림")]
         [SerializeField, Range(2, 60)] private int maxSeconds = 20;
+        [Tooltip("이 길이보다 짧은 녹음은 무시(초). Whisper 무음 환각('고맙습니다' 등) 방지")]
+        [SerializeField] private float minSeconds = 0.4f;
+        [Tooltip("피크 진폭이 이 값보다 작으면 무음으로 보고 전송하지 않음(0~1)")]
+        [SerializeField, Range(0f, 0.2f)] private float silenceThreshold = 0.02f;
 
         public bool IsListening { get; private set; }
+        public bool IsTranscribing { get; private set; }
         public event Action<string> OnPartialText;
         public event Action<string> OnFinalText;
 
@@ -95,18 +100,47 @@ namespace AIAvatar
             }
 
             int sampleCount = endSample - recordStartSample;
-            var samples = new float[sampleCount * recordingClip.channels];
+            int ch = recordingClip.channels, freq = recordingClip.frequency;
+            var samples = new float[sampleCount * ch];
             recordingClip.GetData(samples, recordStartSample);
-
-            byte[] wav = EncodeWav(samples, recordingClip.channels, recordingClip.frequency);
             recordingClip = null;
 
+            // 진단: 길이/피크. Whisper 무음 환각 방지를 위해 짧거나 조용하면 전송하지 않음.
+            float peak = 0f;
+            for (int i = 0; i < samples.Length; i++) { float a = Mathf.Abs(samples[i]); if (a > peak) peak = a; }
+            float duration = (float)sampleCount / Mathf.Max(1, freq);
+            string dev = Microphone.devices.Length > 0 ? Microphone.devices[0] : "(없음)";
+            Debug.Log($"[AIAvatar] 녹음 완료: {duration:F2}s, peak {peak:F3}, 장치 '{activeDevice ?? dev}'");
+
+            if (duration < minSeconds)
+            {
+                Debug.LogWarning($"[AIAvatar] 녹음이 너무 짧아요({duration:F2}s < {minSeconds}s). V 키를 조금 더 길게 누른 채 말하세요.");
+                OnFinalText?.Invoke(string.Empty);
+                return;
+            }
+            if (peak < silenceThreshold)
+            {
+                Debug.LogWarning($"[AIAvatar] 입력 소리가 거의 없어요(peak {peak:F3} < {silenceThreshold}). " +
+                                 $"마이크가 실제로 소리를 잡는지(장치 '{dev}'), 음소거/권한/입력 볼륨을 확인하세요. " +
+                                 "(무음을 보내면 Whisper 가 '고맙습니다' 같은 엉뚱한 결과를 냅니다)");
+                OnFinalText?.Invoke(string.Empty);
+                return;
+            }
+
+            byte[] wav = EncodeWav(samples, ch, freq);
             _ = TranscribeAsync(wav);
         }
 
         // ── Whisper request (multipart/form-data) ─────────────────────────────
 
         private async Awaitable TranscribeAsync(byte[] wav)
+        {
+            IsTranscribing = true;
+            try { await TranscribeCore(wav); }
+            finally { IsTranscribing = false; }
+        }
+
+        private async Awaitable TranscribeCore(byte[] wav)
         {
             bool useProxy = !string.IsNullOrEmpty(proxyUrl);
             string key = ResolveKey();
@@ -121,6 +155,7 @@ namespace AIAvatar
             form.AddBinaryData("file", wav, "speech.wav", "audio/wav");
             form.AddField("model", model);
             form.AddField("response_format", "json");
+            form.AddField("temperature", "0"); // 환각 감소
             if (!string.IsNullOrEmpty(language)) form.AddField("language", language);
 
             string url = useProxy ? proxyUrl : endpoint;

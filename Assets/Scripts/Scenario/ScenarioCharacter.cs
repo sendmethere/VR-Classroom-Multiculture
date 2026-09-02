@@ -13,7 +13,7 @@ namespace Classroom.Scenario
     /// 훅이 모두 있으므로 Animator로 교체하는 것은 순수 추가 작업입니다.
     /// </summary>
     [AddComponentMenu("Classroom Scenario/Scenario Character")]
-    public class ScenarioCharacter : MonoBehaviour
+    public class ScenarioCharacter : MonoBehaviour, AIAvatar.IProximityGazeTarget
     {
         [Header("Identity")]
         [Tooltip("ScenarioLine.speakerId / lookAtId 와 일치시킬 식별자 (예: 선영)")]
@@ -69,6 +69,10 @@ namespace Classroom.Scenario
 
         /// <summary>대상 쪽으로 몸을 돌려 바라봄(수평 회전).</summary>
         public void LookAt(Transform target) => lookTarget = target;
+
+        // ── IProximityGazeTarget (면담 중 플레이어와 눈맞춤) ───────────────────
+        public void LookAtPlayer(Transform player) => lookTarget = player;
+        public void ResetGaze() => ResetLook();
 
         /// <summary>시작 자세로 복귀.</summary>
         public void ResetLook()

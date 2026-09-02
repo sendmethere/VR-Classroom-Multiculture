@@ -54,6 +54,7 @@ namespace AIAvatar
             }
             if (inputField != null)
             {
+                inputField.onFocusSelectAll = false; // 포커스 시 전체선택 방지(타이핑해도 안 지워짐)
                 inputField.onSubmit.RemoveListener(OnInputSubmit);
                 inputField.onSubmit.AddListener(OnInputSubmit);
             }
@@ -74,6 +75,19 @@ namespace AIAvatar
             c.colorMultiplier  = 1f;
             c.fadeDuration     = 0.08f;
             btn.colors = c;
+        }
+
+        /// <summary>인식된 음성 등을 입력창에 채워 넣어 검토·수정 후 전송하게 함(자동 전송 X).</summary>
+        public void SetInputText(string text)
+        {
+            if (inputField == null) return;
+            inputField.text = text ?? "";
+            int end = inputField.text.Length;
+            inputField.ActivateInputField();
+            // 커서를 끝으로 두고 선택 영역을 없앰(전체선택 상태 방지)
+            inputField.caretPosition = end;
+            inputField.selectionAnchorPosition = end;
+            inputField.selectionFocusPosition = end;
         }
 
         public void ShowThinking(string speakerName)

@@ -119,6 +119,9 @@ namespace AIAvatar
 
         public void SelectChoice(string choiceText) => SubmitPlayerMessage(choiceText);
 
+        /// <summary>인식된 음성을 바로 보내지 않고 입력창에 넣어 사용자가 검토·수정 후 전송하게 함.</summary>
+        public void SetDraftInput(string text) => ui?.SetInputText(text);
+
         public async void Restart() => await StartConversationAsync();
 
         // ── Internals ─────────────────────────────────────────────────────────

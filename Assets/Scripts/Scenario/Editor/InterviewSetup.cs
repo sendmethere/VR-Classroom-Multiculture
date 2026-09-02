@@ -180,28 +180,72 @@ namespace Classroom.Scenario.EditorTools
             return hasInspectorKey || hasProxy;
         }
 
+        // 씬에 음성 입력 리그가 없으면 직접 추가(기존 씬 보정용). 이미 있으면 선택만.
+        [MenuItem("Tools/Classroom Scenario/Add Voice Input (Push-To-Talk)", false, 42)]
+        public static void AddVoiceInputRig()
+        {
+            var existing = Object.FindFirstObjectByType<SpeechInputRelay>();
+            if (existing != null)
+            {
+                Selection.activeGameObject = existing.gameObject;
+                EditorUtility.DisplayDialog("음성 입력",
+                    "이미 음성 입력 리그가 있습니다:\n" + existing.gameObject.name, "확인");
+                return;
+            }
+            EnsureVoiceInput();
+            var created = Object.FindFirstObjectByType<SpeechInputRelay>();
+            if (created != null) Selection.activeGameObject = created.gameObject;
+            EditorSceneMarkDirty();
+            EditorUtility.DisplayDialog("음성 입력",
+                created != null
+                    ? "음성 입력 리그를 추가했습니다: " + created.gameObject.name +
+                      "\n\nPlay 후 대화 중 V 키(또는 '● 말하기' 버튼)로 녹음하세요.\nConsole 에 '🎙 녹음 시작' 로그가 뜨는지 확인하세요."
+                    : "리그 생성에 실패했습니다.", "확인");
+        }
+
+        // 대화창이 캐릭터를 가리지 않도록 모든 DialogueBillboard 를 옆/위로 재배치.
+        [MenuItem("Tools/Classroom Scenario/Fix Dialogue Panel Placement", false, 43)]
+        public static void FixDialoguePanelPlacement()
+        {
+            var billboards = Object.FindObjectsByType<DialogueBillboard>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            if (billboards == null || billboards.Length == 0)
+            {
+                EditorUtility.DisplayDialog("대화창 배치", "씬에서 DialogueBillboard 를 찾지 못했습니다.\n먼저 Attach Interview to Characters 를 실행하세요.", "확인");
+                return;
+            }
+            foreach (var b in billboards)
+            {
+                SetBool(b, "followPosition", true);
+                SetFloat(b, "orbitDistance", 0.55f); // 캐릭터→플레이어 쪽으로 살짝
+                SetFloat(b, "heightOffset", 0.45f);  // 머리 기준 조금 위
+                SetFloat(b, "lateralOffset", 0.85f); // 옆으로 확실히 비켜 캐릭터가 보이게
+                EditorUtility.SetDirty(b);
+            }
+            EditorSceneMarkDirty();
+            EditorUtility.DisplayDialog("대화창 배치",
+                $"{billboards.Length}개 대화창을 캐릭터 옆/위로 재배치했습니다.\n" +
+                "각 Dialogue Canvas ▸ Dialogue Billboard 의 Orbit/Height/Lateral Offset 으로 미세조정할 수 있습니다.", "확인");
+        }
+
         // 플레이어(XR Origin/카메라)에 V키 Push-To-Talk 음성 입력 리그를 1개만 부착.
         private static void EnsureVoiceInput()
         {
             if (Object.FindFirstObjectByType<SpeechInputRelay>() != null) return; // 이미 있음
 
-            // 부착 대상: XRPlayerController → 그 부모 없으면 메인 카메라 리그.
+            // 부착 대상: XRPlayerController → 없으면 메인 카메라 → 그래도 없으면 씬 루트.
             Transform host = null;
             var mover = Object.FindFirstObjectByType<XRPlayerController>();
             if (mover != null) host = mover.transform;
             if (host == null && Camera.main != null) host = Camera.main.transform;
-            if (host == null)
-            {
-                Debug.LogWarning("[Interview] 플레이어(XR Origin/Main Camera)를 찾지 못해 음성 입력을 자동 부착하지 못했습니다. " +
-                                 "빈 오브젝트에 WhisperSpeechToText + SpeechInputRelay 를 직접 추가하세요.");
-                return;
-            }
 
             var go = new GameObject("Voice Input (Push-To-Talk)");
             Undo.RegisterCreatedObjectUndo(go, "Add Voice Input");
-            go.transform.SetParent(host, false);
+            if (host != null) go.transform.SetParent(host, false); // 못 찾으면 루트에 생성(마이크는 기본 장치라 위치 무관)
             go.AddComponent<WhisperSpeechToText>();
             go.AddComponent<SpeechInputRelay>(); // controller 비움 → 활성 대화 자동 대상
+
+            if (host == null)
+                Debug.Log("[Interview] 플레이어를 못 찾아 'Voice Input (Push-To-Talk)' 를 씬 루트에 생성했습니다. (동작에는 영향 없음)");
         }
 
         private static CharacterPersona LoadPersona(string id) =>
@@ -236,6 +280,15 @@ namespace Classroom.Scenario.EditorTools
             var p = so.FindProperty(property);
             if (p == null) { Debug.LogError($"[Interview] bool '{property}' 필드를 {target.GetType().Name} 에서 못 찾음."); return; }
             p.boolValue = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void SetFloat(Object target, string property, float value)
+        {
+            var so = new SerializedObject(target);
+            var p = so.FindProperty(property);
+            if (p == null) { Debug.LogError($"[Interview] float '{property}' 필드를 {target.GetType().Name} 에서 못 찾음."); return; }
+            p.floatValue = value;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
     }

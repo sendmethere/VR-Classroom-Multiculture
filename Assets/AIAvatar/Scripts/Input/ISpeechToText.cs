@@ -1,5 +1,7 @@
 using System;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 namespace AIAvatar
@@ -12,6 +14,9 @@ namespace AIAvatar
     public interface ISpeechToText
     {
         bool IsListening { get; }
+
+        /// <summary>녹음이 끝나고 서버로 전사 요청을 보내는 중인지.</summary>
+        bool IsTranscribing { get; }
 
         /// <summary>Begin capturing microphone audio.</summary>
         void StartListening();
@@ -34,6 +39,7 @@ namespace AIAvatar
     public class NullSpeechToText : MonoBehaviour, ISpeechToText
     {
         public bool IsListening { get; private set; }
+        public bool IsTranscribing => false;
         public event Action<string> OnPartialText;
         public event Action<string> OnFinalText;
 
@@ -75,9 +81,20 @@ namespace AIAvatar
         [SerializeField] private Key pushToTalkKey = Key.V;
         [Tooltip("controller 가 비어 있을 때 활성 ProximityActivator 로 대상을 자동 탐색")]
         [SerializeField] private bool autoTargetActiveConversation = true;
+        [Tooltip("켜면 인식 즉시 전송. 끄면(기본) 입력창에 넣어 검토·수정 후 전송 버튼을 눌러 보냄")]
+        [SerializeField] private bool submitImmediately = false;
 
         private ISpeechToText stt;
         private bool talking;
+
+        /// <summary>현재 녹음 중인지 (버튼 UI 표시용).</summary>
+        public bool IsListening => stt != null && stt.IsListening;
+
+        /// <summary>녹음 후 전사(받아쓰기) 요청 중인지.</summary>
+        public bool IsTranscribing => stt != null && stt.IsTranscribing;
+
+        /// <summary>녹음 또는 전사 중이라 새 녹음을 받을 수 없는 상태.</summary>
+        public bool IsBusy => IsListening || IsTranscribing;
 
         private void Awake()
         {
@@ -104,13 +121,25 @@ namespace AIAvatar
             var keyCtrl = kb[pushToTalkKey];
             if (keyCtrl == null) return;
 
-            if (keyCtrl.wasPressedThisFrame && !talking) BeginTalk();
+            // 입력창에 타이핑 중이면 V 는 글자 입력이므로 마이크를 켜지 않는다.
+            if (keyCtrl.wasPressedThisFrame && !talking && !IsTypingInInputField()) BeginTalk();
             else if (keyCtrl.wasReleasedThisFrame && talking) EndTalk();
+        }
+
+        // 현재 UI 입력 필드(TMP_InputField)에 포커스가 있어 타이핑 중인지.
+        private static bool IsTypingInInputField()
+        {
+            var es = EventSystem.current;
+            var go = es != null ? es.currentSelectedGameObject : null;
+            if (go == null) return false;
+            var field = go.GetComponent<TMP_InputField>();
+            return field != null && field.isFocused;
         }
 
         public void BeginTalk()
         {
             if (stt == null) return;
+            if (stt.IsListening || stt.IsTranscribing) return; // 받아쓰는 중엔 새 녹음 금지
             talking = true;
             stt.StartListening();
         }
@@ -126,8 +155,13 @@ namespace AIAvatar
         {
             if (string.IsNullOrWhiteSpace(text)) return;
             var target = ResolveController();
-            if (target != null) target.SubmitPlayerMessage(text);
-            else Debug.Log("[AIAvatar] 인식된 음성을 받을 활성 대화를 찾지 못했습니다: " + text);
+            if (target == null)
+            {
+                Debug.Log("[AIAvatar] 인식된 음성을 받을 활성 대화를 찾지 못했습니다: " + text);
+                return;
+            }
+            if (submitImmediately) target.SubmitPlayerMessage(text);
+            else target.SetDraftInput(text); // 입력창에 넣고 사용자가 검토·수정 후 '전송'
         }
 
         private ConversationController ResolveController()

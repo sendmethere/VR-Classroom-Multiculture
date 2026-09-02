@@ -40,7 +40,7 @@ namespace AIAvatar.EditorTools
         private readonly List<GameObject> matches = new();
         private Vector2 scroll;
 
-        [MenuItem("Tools/AI Avatar/Batch Prefab Replacer")]
+        // [MenuItem("Tools/AI Avatar/Batch Prefab Replacer")]  // 숨김(샘플/데모)
         private static void Open() => GetWindow<PrefabBatchReplacer>("Prefab Replacer");
 
         private void OnGUI()

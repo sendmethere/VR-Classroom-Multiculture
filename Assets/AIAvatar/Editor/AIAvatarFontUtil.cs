@@ -34,7 +34,7 @@ namespace AIAvatar.EditorTools
             @"C:\Windows\Fonts\batang.ttc",
         };
 
-        [MenuItem("Tools/AI Avatar/Setup Korean Font", false, 30)]
+        // [MenuItem("Tools/AI Avatar/Setup Korean Font", false, 30)]  // 숨김(자동 실행 유틸)
         public static void SetupKoreanFontMenu()
         {
             var font = GetOrCreateKoreanFont();

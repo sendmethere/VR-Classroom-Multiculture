@@ -18,7 +18,7 @@ namespace VRClassroom.EditorTools
             "Podium", "Plant", "Lamp", "Prop",
         };
 
-        [MenuItem("Tools/VR Classroom/Setup Tags")]
+        // [MenuItem("Tools/VR Classroom/Setup Tags")]  // 숨김(자동 실행 유틸)
         public static void SetupDefaultTags()
         {
             EnsureTags(DefaultTags);

@@ -96,7 +96,7 @@ namespace Classroom.Scenario.EditorTools
                 "• 남은 수동 작업/세부 지침: " + ReadmePath);
         }
 
-        [MenuItem("Tools/Classroom Scenario/Create Scenario Script Only", false, 20)]
+        // [MenuItem("Tools/Classroom Scenario/Create Scenario Script Only", false, 20)]  // 숨김(중복)
         public static void CreateScriptOnly()
         {
             var s = CreateOrLoadScript();

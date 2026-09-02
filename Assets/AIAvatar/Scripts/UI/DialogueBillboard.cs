@@ -21,11 +21,11 @@ namespace AIAvatar
         [Tooltip("anchor 주위로 플레이어 쪽에 배치할지 (끄면 현재 위치 유지, 회전만)")]
         [SerializeField] private bool followPosition = true;
         [Tooltip("아바타로부터 플레이어 쪽으로 띄울 거리(m)")]
-        [SerializeField] private float orbitDistance = 0.75f;
-        [Tooltip("anchor 기준 패널 높이(m)")]
-        [SerializeField] private float heightOffset = 1.5f;
-        [Tooltip("좌우 이동: +면 캐릭터 기준 오른쪽, -면 왼쪽 (m)")]
-        [SerializeField] private float lateralOffset = 0.25f;
+        [SerializeField] private float orbitDistance = 0.55f;
+        [Tooltip("anchor(머리) 기준 패널 높이(m)")]
+        [SerializeField] private float heightOffset = 0.45f;
+        [Tooltip("좌우 이동: +면 캐릭터 기준 오른쪽, -면 왼쪽 (m). 캐릭터를 가리지 않게 옆으로 비켜줌")]
+        [SerializeField] private float lateralOffset = 0.85f;
         [SerializeField] private float positionLerp = 8f;
 
         [Header("Facing")]

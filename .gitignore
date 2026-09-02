@@ -81,6 +81,8 @@ desktop.ini
 *.docx
 *.md
 *.md.meta
+!CLAUDE.md
+!CLAUDE.md.meta
 
 # API 키 파일의 .meta 도 함께 제외 (키 파일은 위에서 이미 무시)
 /[Aa]ssets/[Ss]treamingAssets/*api_key*.txt.meta
