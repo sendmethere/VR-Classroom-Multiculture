@@ -28,7 +28,7 @@ namespace Classroom.Scenario.EditorTools
         // 모둠 중앙(월드). 플레이어가 원점 부근에서 +Z 로 다가온다고 가정.
         private static readonly Vector3 GroupCenter = new(0f, 0f, 3f);
         private const float SeatRadius = 0.95f; // 책상 둘레 반경
-        private const float BodyHeight = 1.24f; // 6학년 ~1.2m placeholder
+        private const float BodyHeight = 1.24f; // 4학년 ~1.2m placeholder
 
         [MenuItem("Tools/Classroom Scenario/Build Observation Scene", false, 0)]
         public static void BuildScene()
@@ -102,6 +102,61 @@ namespace Classroom.Scenario.EditorTools
             var s = CreateOrLoadScript();
             Selection.activeObject = s;
             EditorGUIUtility.PingObject(s);
+        }
+
+        // 관찰 세션 스킵 버튼(화면 하단, 재생 중에만 표시)을 생성해 Director 에 연결.
+        [MenuItem("Tools/Classroom Scenario/Add Observation Skip Button", false, 22)]
+        public static void AddObservationSkipButton()
+        {
+            var director = Object.FindFirstObjectByType<ScenarioDirector>();
+            if (director == null)
+            {
+                EditorUtility.DisplayDialog("스킵 버튼",
+                    "씬에 ScenarioDirector 가 없습니다.\n먼저 Build Observation Scene 을 실행하세요.", "확인");
+                return;
+            }
+            if (Object.FindFirstObjectByType<ScenarioSkipButton>() is { } existing)
+            {
+                Selection.activeGameObject = existing.gameObject;
+                EditorUtility.DisplayDialog("스킵 버튼", "이미 관찰 스킵 버튼이 있습니다.", "확인");
+                return;
+            }
+
+            var font = AIAvatarFontUtil.GetOrCreateKoreanFont();
+
+            var canvasGO = new GameObject("Observation Skip UI",
+                typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            Undo.RegisterCreatedObjectUndo(canvasGO, "Add Skip Button");
+            var canvas = canvasGO.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 100;
+            var scaler = canvasGO.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+
+            // 하단 중앙 버튼
+            var btnRT = NewRect("SkipButton", canvasGO.transform);
+            btnRT.anchorMin = btnRT.anchorMax = new Vector2(0.5f, 0f);
+            btnRT.pivot = new Vector2(0.5f, 0f);
+            btnRT.anchoredPosition = new Vector2(0f, 48f);
+            btnRT.sizeDelta = new Vector2(360f, 80f);
+            var img = btnRT.gameObject.AddComponent<Image>();
+            img.color = new Color(0.12f, 0.14f, 0.18f, 0.92f);
+            var btn = btnRT.gameObject.AddComponent<Button>();
+
+            var label = NewText("Label", btnRT, "관찰 세션 건너뛰기", 30, TextAlignmentOptions.Center, font);
+            label.color = Color.white;
+            Stretch(label.rectTransform);
+
+            var skip = canvasGO.AddComponent<ScenarioSkipButton>();
+            skip.EditorWire(director, btnRT.gameObject, btn);
+
+            AIAvatarSetup.EnsureEventSystem(); // 클릭용 EventSystem 보장
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+            Selection.activeGameObject = canvasGO;
+            Debug.Log("[Scenario] 관찰 스킵 버튼 추가 완료 ✅ — 재생 중에만 화면 하단에 표시되고, 누르면 즉시 면담 단계로 넘어갑니다.\n" +
+                      "(VR HMD 안에서 쓰려면 Canvas 를 World Space 로 바꾸면 됩니다.)");
         }
 
         // ── 캐릭터(자리) 빌드 ──────────────────────────────────────────────────
@@ -279,7 +334,7 @@ namespace Classroom.Scenario.EditorTools
             {
                 L("선영", "아.. 나 마야랑 하기 싫었는데 ㅠㅠ", lookAt: "민영", g: Gesture.Whisper, emo: "sad"),
                 L("민영", "나도… 마야는 왠지 잘 못할 것 같아", lookAt: "마야", g: Gesture.Whisper),
-                L("태상", "오늘 우리는 우리 지역의 문화를 알리는 신문을 만들어야 해! 각자 어떤 역할을 하면 좋겠어?", emo: "happy"),
+                L("태상", "오늘 우리는 우리 지역의 자랑거리를 소개하는 신문을 만들어야 해! 각자 어떤 역할을 하면 좋겠어?", emo: "happy"),
                 L("민영", "먼저 서로 잘하는 것에 대해 말해볼까?"),
                 L("선영", "좋아, 나는 인터넷 검색으로 자료 찾기를 잘해!", emo: "happy"),
                 L("민영", "나는 내용을 정리하고 표 만드는 걸 잘해"),
@@ -339,7 +394,7 @@ Character (선영)        ← ScenarioCharacter (id=""선영"")
    - Rig 탭에서 **Animation Type = Humanoid** 권장(나중에 애니메이션 붙이기 쉬움).
 2. Hierarchy 에서 `Character (이름) ▸ Model` 을 펼친다.
 3. 내 모델을 **`Model` 아래로** 드래그해 자식으로 넣는다. Transform 을 **Reset**(localPosition 0, rotation 0).
-   - 발이 바닥(y=0)에 오고 정면이 +Z(앞)를 보도록 맞춘다. 키는 6학년 ≈ 1.2~1.4m.
+   - 발이 바닥(y=0)에 오고 정면이 +Z(앞)를 보도록 맞춘다. 키는 4학년 ≈ 1.2~1.4m.
 4. 기존 placeholder 인 `Body (placeholder)` 와 `Head Mesh`(구) 를 **삭제**.
    - 시선/머리 기준점인 빈 **`Head`** 는 남겨도 되고, 지웠다면 5번에서 다시 지정.
 5. `Character (이름)` 선택 → **ScenarioCharacter** 컴포넌트에서:

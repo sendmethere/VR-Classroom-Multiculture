@@ -25,6 +25,10 @@ namespace AIAvatar
         [TextArea(2, 4)] public string greeting = "안녕하세요! 무엇이 궁금하신가요?";
         public string[] openingChoices = { "안녕하세요", "당신은 누구죠?", "여긴 어디죠?" };
 
+        [Header("Voice (TTS)")]
+        [Tooltip("이 인물의 TTS 음성 이름 (OpenAI: alloy/echo/fable/onyx/nova/shimmer/coral/ash/sage 등). 비우면 TTS 컴포넌트 기본값 사용")]
+        public string ttsVoice = "";
+
         [Header("Behaviour")]
         [Tooltip("LLM이 매 턴 제안할 선택지 개수 (0이면 선택지 없이 자유 입력만)")]
         [Range(0, 4)] public int suggestedChoiceCount = 3;

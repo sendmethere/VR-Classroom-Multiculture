@@ -37,6 +37,10 @@ namespace AIAvatar
         public UnityEvent onDeactivated;
 
         public bool IsActive { get; private set; }
+
+        /// <summary>The conversation this proximity zone drives (for input routing).</summary>
+        public ConversationController Controller => controller;
+
         private bool started;
 
         private void Awake()

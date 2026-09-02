@@ -126,6 +126,38 @@ namespace AIAvatar.EditorTools
             EditorGUIUtility.PingObject(p);
         }
 
+        // 이미 씬에 만들어진 대화 UI(면담 리그)들에 '● 말하기' 버튼을 주입한다.
+        // (BuildDialogueUI 는 새로 붙이는 캐릭터에만 실행되므로, 기존 씬 보정용)
+        [MenuItem("Tools/AI Avatar/Add '말하기' Button to Dialogue UIs", false, 2)]
+        public static void AddTalkButtonsToDialogueUIs()
+        {
+            var font = AIAvatarFontUtil.GetOrCreateKoreanFont();
+            var uis = Object.FindObjectsByType<DialogueUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            int added = 0, skipped = 0;
+            foreach (var ui in uis)
+            {
+                var so = new SerializedObject(ui);
+                var send = so.FindProperty("sendButton")?.objectReferenceValue as Button;
+                var input = so.FindProperty("inputField")?.objectReferenceValue as TMP_InputField;
+                Transform row = send != null ? send.transform.parent
+                              : (input != null ? input.transform.parent : null);
+                if (row == null) { skipped++; continue; }
+                if (row.GetComponentInChildren<PushToTalkButton>(true) != null) { skipped++; continue; }
+
+                var micBtn = NewButton("Talk", row, "● 말하기", font, out _, null);
+                AddLayoutElement(micBtn.gameObject, preferredWidth: 140);
+                micBtn.gameObject.AddComponent<PushToTalkButton>();
+                added++;
+                EditorUtility.SetDirty(ui);
+            }
+            EnsureEventSystem();
+            if (uis.Length > 0)
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
+                    UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+            Debug.Log($"[AIAvatar] '말하기' 버튼 주입 완료 ✅ 추가 {added} / 건너뜀 {skipped}" +
+                      "(이미 있거나 입력행 못 찾음). 대화창이 뜨면 입력창 옆에 '● 말하기' 버튼이 보입니다.");
+        }
+
         // ── UI construction ───────────────────────────────────────────────────
 
         internal static DialogueUI BuildDialogueUI(Transform parent, TMP_FontAsset font,
@@ -229,6 +261,11 @@ namespace AIAvatar.EditorTools
             string sendLabel = sprites.submit != null ? "" : "전송";
             var sendBtn = NewButton("Send", inputRow, sendLabel, font, out _, sprites.submit);
             AddLayoutElement(sendBtn.gameObject, preferredWidth: 120);
+
+            // 음성 입력 버튼(누르는 동안 녹음 → 떼면 Whisper 인식). V 키와 동일 효과.
+            var micBtn = NewButton("Talk", inputRow, "● 말하기", font, out _, null);
+            AddLayoutElement(micBtn.gameObject, preferredWidth: 140);
+            micBtn.gameObject.AddComponent<AIAvatar.PushToTalkButton>();
 
             // Wire DialogueUI serialized refs
             SetRef(ui, "nameLabel", nameLabel);

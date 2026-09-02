@@ -28,6 +28,10 @@ namespace AIAvatar
         [SerializeField] private string model = "claude-sonnet-4-6";
         [SerializeField, Range(64, 4096)] private int maxTokens = 1024;
 
+        [Header("Opening")]
+        [Tooltip("첫 발화를 LLM 생성 대신 Persona.greeting 으로 고정 (문서에 규정한 인물별 첫 발화와 정확히 일치). 이후 턴부터 LLM")]
+        [SerializeField] private bool useFixedGreeting = true;
+
         [Header("Auth (택1) — 키는 빌드에 넣지 말고 프록시 권장)")]
         [Tooltip("비워두면 StreamingAssets/anthropic_api_key.txt 또는 환경변수 ANTHROPIC_API_KEY 사용")]
         [SerializeField] private string apiKey = "";
@@ -42,8 +46,20 @@ namespace AIAvatar
         public void Initialize(CharacterPersona persona) => this.persona = persona;
 
         public Awaitable<AvatarTurn> BeginAsync(ConversationState state) =>
-            // Treat the opening as a hidden "greet the player" instruction.
-            RequestAsync(state, "[SYSTEM] 대화를 시작합니다. 인사하고 첫 대사를 해주세요.");
+            // 첫 발화 고정 옵션: LLM 생성 대신 페르소나의 규정된 첫 문장을 그대로 사용.
+            useFixedGreeting && persona != null && !string.IsNullOrWhiteSpace(persona.greeting)
+                ? FixedGreetingAsync()
+                // 그 외엔 오프닝을 "인사하고 첫 대사" 지시로 LLM에 요청.
+                : RequestAsync(state, "[SYSTEM] 대화를 시작합니다. 인사하고 첫 대사를 해주세요.");
+
+        private async Awaitable<AvatarTurn> FixedGreetingAsync()
+        {
+            await Awaitable.NextFrameAsync();
+            var turn = new AvatarTurn { reply = persona.greeting };
+            turn.directives.emotion = "neutral";
+            if (persona.openingChoices != null) turn.choices.AddRange(persona.openingChoices);
+            return turn;
+        }
 
         public Awaitable<AvatarTurn> RespondAsync(ConversationState state, string message) =>
             RequestAsync(state, message);

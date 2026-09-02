@@ -78,6 +78,7 @@ namespace AIAvatar
             State.Clear();
             State.Persona = persona;
             provider.Initialize(persona);
+            (tts as RestTextToSpeech)?.SetVoice(persona.ttsVoice); // 인물별 음성 반영
             if (avatar != null) avatar.ApplyPersona(persona);
 
             IsBusy = true;

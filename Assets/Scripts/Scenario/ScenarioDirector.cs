@@ -76,6 +76,17 @@ namespace Classroom.Scenario
         /// <summary>현재 줄을 즉시 끝내고 다음 줄로 넘김(또는 타자기 즉시 완성).</summary>
         public void Advance() => advanceRequested = true;
 
+        /// <summary>관찰 세션을 즉시 종료하고 면담을 연다(스킵). 재생 중이 아니면 무시.</summary>
+        public void Skip()
+        {
+            if (!IsPlaying) return;
+            StopAllCoroutines();
+            foreach (var c in characters)
+                if (c != null) { c.HideBubble(); c.ResetLook(); }
+            IsPlaying = false;
+            onFinished?.Invoke();
+        }
+
         private IEnumerator Run()
         {
             IsPlaying = true;

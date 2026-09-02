@@ -119,11 +119,15 @@ namespace Classroom.Scenario.EditorTools
             }
 
             AIAvatarSetup.EnsureEventSystem(); // XR 레이로 버튼 클릭 가능하도록
+            EnsureVoiceInput();               // 플레이어에 V키 음성 입력(Whisper STT) 부착
 
             EditorSceneMarkDirty();
             Debug.Log(
                 $"[Interview] 면담 자동 구성 완료 ✅ ({attached}명에 추가)\n" +
                 "• 흐름: [ ! ] 로 관찰 세션 재생 → 끝나면 면담 잠금 해제 → 각 아이에게 다가가면(약 2m) 대화창이 뜨고 시작.\n" +
+                "• 음성 입력: 대화 중 V 키를 누르는 동안 말하고 떼면 Whisper 로 인식되어 전송됩니다(기본 마이크). " +
+                "OpenAI 키 필요: 'Voice Input (Push-To-Talk)' ▸ Whisper Speech To Text 의 Api Key, " +
+                "또는 Assets/StreamingAssets/openai_api_key.txt, 환경변수 OPENAI_API_KEY.\n" +
                 "• 백엔드: Mock(오프라인). 진짜 AI 는 각 'Interview Brain' 의 Conversation Controller ▸ Provider Behaviour 를 ClaudeConversationProvider 로 바꾸고 키 설정.\n" +
                 "• 프롬프트 수정: Assets/AIAvatar/Personas/Persona_*.asset ▸ System Prompt.");
         }
@@ -174,6 +178,30 @@ namespace Classroom.Scenario.EditorTools
             bool hasInspectorKey = p != null && !string.IsNullOrEmpty(p.stringValue);
             bool hasProxy = proxy != null && !string.IsNullOrEmpty(proxy.stringValue);
             return hasInspectorKey || hasProxy;
+        }
+
+        // 플레이어(XR Origin/카메라)에 V키 Push-To-Talk 음성 입력 리그를 1개만 부착.
+        private static void EnsureVoiceInput()
+        {
+            if (Object.FindFirstObjectByType<SpeechInputRelay>() != null) return; // 이미 있음
+
+            // 부착 대상: XRPlayerController → 그 부모 없으면 메인 카메라 리그.
+            Transform host = null;
+            var mover = Object.FindFirstObjectByType<XRPlayerController>();
+            if (mover != null) host = mover.transform;
+            if (host == null && Camera.main != null) host = Camera.main.transform;
+            if (host == null)
+            {
+                Debug.LogWarning("[Interview] 플레이어(XR Origin/Main Camera)를 찾지 못해 음성 입력을 자동 부착하지 못했습니다. " +
+                                 "빈 오브젝트에 WhisperSpeechToText + SpeechInputRelay 를 직접 추가하세요.");
+                return;
+            }
+
+            var go = new GameObject("Voice Input (Push-To-Talk)");
+            Undo.RegisterCreatedObjectUndo(go, "Add Voice Input");
+            go.transform.SetParent(host, false);
+            go.AddComponent<WhisperSpeechToText>();
+            go.AddComponent<SpeechInputRelay>(); // controller 비움 → 활성 대화 자동 대상
         }
 
         private static CharacterPersona LoadPersona(string id) =>

@@ -53,6 +53,12 @@ namespace AIAvatar
 
         public bool IsSpeaking => audioSource != null && audioSource.isPlaying;
 
+        /// <summary>인물별 음성 전환 (persona.ttsVoice 를 런타임에 반영).</summary>
+        public void SetVoice(string v)
+        {
+            if (!string.IsNullOrWhiteSpace(v)) voice = v.Trim();
+        }
+
         private void Awake()
         {
             if (audioSource == null) audioSource = GetComponent<AudioSource>();
@@ -244,16 +250,21 @@ namespace AIAvatar
         private string ResolveKey()
         {
             if (!string.IsNullOrEmpty(apiKey)) return apiKey.Trim();
-            try
+            // TTS 전용 파일 → 공용 OpenAI 키 파일(STT/Whisper와 공유) 순으로 탐색.
+            // 덕분에 openai_api_key.txt 하나면 STT+TTS가 같은 키로 동작.
+            foreach (var file in new[] { "tts_api_key.txt", "openai_api_key.txt" })
             {
-                string p = System.IO.Path.Combine(Application.streamingAssetsPath, "tts_api_key.txt");
-                if (System.IO.File.Exists(p))
+                try
                 {
-                    string k = System.IO.File.ReadAllText(p).Trim();
-                    if (!string.IsNullOrEmpty(k)) return k;
+                    string p = System.IO.Path.Combine(Application.streamingAssetsPath, file);
+                    if (System.IO.File.Exists(p))
+                    {
+                        string k = System.IO.File.ReadAllText(p).Trim();
+                        if (!string.IsNullOrEmpty(k)) return k;
+                    }
                 }
+                catch { /* ignore */ }
             }
-            catch { /* ignore */ }
             if (!string.IsNullOrEmpty(apiKeyEnvVar))
             {
                 string e = Environment.GetEnvironmentVariable(apiKeyEnvVar);
